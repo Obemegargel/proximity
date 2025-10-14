@@ -56,6 +56,12 @@ export default function App() {
     };
   }, []);
 
+  // useMemo converts the devices map into an array and sorts by RSSI(signal strength) descending.
+  // if missing RSSI it auto sets value super low for fast sorting.
+  // This recomputes only when devices changes.
+  // list is a memoized array of Seen devices, sorted by RSSI (signal strength).
+  // useMemo is a hook that memoizes the result of a function, recomputing it only when its dependencies change.
+  // Here, it recomputes when 'devices' changes.  //Q: do I understand this correctly?
   const list = useMemo(
     () =>
       Object.values(devices).sort(
@@ -65,6 +71,10 @@ export default function App() {
   );
 
   // ask runtime permissions as needed
+  // ensurePermissions is an async function that checks and requests necessary Bluetooth permissions on Android such as:
+  // BLUETOOTH_SCAN, BLUETOOTH_CONNECT and ACCESS_FINE_LOCATION (for Android < 31) due to older Android behavior.
+  // Iterates each permission, if any is not granted/limited, it shows an Alert offering to open Settings and returns false
+  // otherwise returns true.
   async function ensurePermissions() {
     if (Platform.OS !== "android") return true;
 
@@ -97,6 +107,11 @@ export default function App() {
     return true;
   }
 
+  // Bails if the manager isn't ready. Resets device list and sets scanning=true.
+  // Calls manager.startDeviceScan(null, { allowDuplicates: false }, callback) to scan all advertisments without duplicate callbacks.
+  // In the callback, if error occurs, it stops scanning and surgaces teh error message.
+  //                  on device it adds it to state if we haven't seen its id before, storing id, best available name (name or localName, and rssi).
+  // schedules stopScan after roughly 20 seconds.
   function startScan() {
     const manager = managerRef.current;
     if (!manager) return;
@@ -133,6 +148,8 @@ export default function App() {
     setTimeout(stopScan, 20000);
   }
 
+  // this stops it after roughly 20 seconds
+  // stops teh native scan (safe even if already stopped) and clears scanning variable.
   function stopScan() {
     const manager = managerRef.current;
     try {
@@ -141,6 +158,11 @@ export default function App() {
     setScanning(false);
   }
 
+  // this returns the UI (what you see on screen)
+  // Root View adds padding; a title explians it's a scan demo
+  // The Discover / Scanning button if already scanning it stops, otherwise it awaits ensurePermissions() and if OK starts a scan.
+  // a status line shows either the number of devices, "scanning..." or "No devices yet."
+  // Flatlist (used farther down) renders the sorted list. each row shows name (or "(no name)"), the device id, and the RSSI (or ? if unknown). Thin dividers separate rows.
   return (
     <View style={{ flex: 1, paddingTop: 64, paddingHorizontal: 16 }}>
       <Text style={{ fontSize: 22, fontWeight: "700", marginBottom: 8 }}>
