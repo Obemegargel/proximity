@@ -1,18 +1,29 @@
 {
   "dependencies": {
+    "@supabase/supabase-js": "^2.76.0",
     "expo": "54.0.13",
     "expo-crypto": "^15.0.7",
     "expo-dev-client": "~6.0.15",
     "expo-device": "~8.0.9",
+    "expo-location": "^19.0.7",
+    "ngeohash": "^0.6.3",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-native": "0.81.4",
     "react-native-ble-plx": "^3.5.0",
     "react-native-permissions": "^5.4.2",
-    "react-native-web": "^0.21.0"
+    "react-native-web": "^0.21.0",
+    "tslib": "^2.8.1",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@types/react": "~19.1.10",
     "typescript": "^5.9.3"
+  },
+  "name": "proximity",
+  "version": "1.0.0",
+  "scripts": {
+    "android": "expo run:android",
+    "ios": "expo run:ios"
   }
 }
