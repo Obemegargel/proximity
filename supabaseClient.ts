@@ -1,36 +1,19 @@
-// import { createClient } from "@supabase/supabase-js";
-
-// export const supabase = createClient(
-//   process.env.EXPO_PUBLIC_SUPABASE_URL!,
-//   process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!,
-//   { realtime: { params: { eventsPerSecond: 10 } } }
-// );
 //_____________________________________________________________________________________________different version
-// // supabaseClient.ts
-// import { createClient } from '@supabase/supabase-js'
-
-// export const supabase = createClient(
-//   process.env.EXPO_PUBLIC_SUPABASE_URL!,
-//   process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!
-// )
-//_____________________________________________________________________________________________different version
-// supabaseClient.ts
-// import { createClient } from "@supabase/supabase-js";
-
-// // Put these in app.config.ts -> expo.extra (or EXPO_PUBLIC_* env vars)
-// const url = process.env.EXPO_PUBLIC_SUPABASE_URL!;
-// const anon = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!;
-
-// export const supabase = createClient(url, anon, {
-//   realtime: { params: { eventsPerSecond: 10 } },
-// });
-//_____________________________________________________________________________________________different version
-// supabaseClient.ts
 import { createClient } from "@supabase/supabase-js";
 
-export const supabase = createClient(
-  "https://YOUR-PROJECT-URL.supabase.co",
-  "YOUR-ANON-KEY"
-);
+const url = process.env.EXPO_PUBLIC_SUPABASE_URL;
+const anon = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 
-export type PresenceMeta = { id: string; name: string }; // (optional)
+if (!url || !anon) {
+  throw new Error(
+    "Missing EXPO_PUBLIC_SUPABASE_URL or EXPO_PUBLIC_SUPABASE_ANON_KEY"
+  );
+}
+
+console.log("SB URL:", process.env.EXPO_PUBLIC_SUPABASE_URL); //just for testing can delete once works if you want
+
+export const supabase = createClient(url, anon);
+
+export type PresenceMeta = { id: string; name: string };
+
+//_____________________________________________________________________________________________different version

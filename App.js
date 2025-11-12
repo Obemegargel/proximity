@@ -257,191 +257,237 @@
 //   );
 // }
 //____________________________________________________________________________________________different version
-import React, { useEffect, useRef, useState } from "react";
+// last code before watching tutorial 10/30/2025
+// import React, { useEffect, useRef, useState } from "react";
 
-import {
-  SafeAreaView,
-  View,
-  Text,
-  Button,
-  FlatList,
-  TouchableOpacity,
-} from "react-native";
-// import { supabase } from "./supabaseclient";
-import { supabase } from "./supabaseClient";
+// import {
+//   SafeAreaView,
+//   View,
+//   Text,
+//   Button,
+//   FlatList,
+//   TouchableOpacity,
+// } from "react-native";
+// // import { supabase } from "./supabaseclient";
+// import { supabase } from "./supabaseClient";
 
-type Meta = { id: string; name: string };
+// type Meta = { id: string; name: string };
 
-function pairColorAndCode(a: string, b: string) {
-  const seedStr = a < b ? a + b : b + a;
-  let h = 0;
-  for (let i = 0; i < seedStr.length; i++)
-    h = (h << 5) - h + seedStr.charCodeAt(i);
-  const palette = [
-    "#FF6B6B",
-    "#FFB020",
-    "#FFD93D",
-    "#6BCB77",
-    "#4D96FF",
-    "#6A4C93",
-    "#00B8A9",
-  ];
-  const color = palette[Math.abs(h) % palette.length];
-  const code = String(Math.abs(h) % 10000).padStart(4, "0");
-  return { color, code };
-}
+// function pairColorAndCode(a: string, b: string) {
+//   const seedStr = a < b ? a + b : b + a;
+//   let h = 0;
+//   for (let i = 0; i < seedStr.length; i++)
+//     h = (h << 5) - h + seedStr.charCodeAt(i);
+//   const palette = [
+//     "#FF6B6B",
+//     "#FFB020",
+//     "#FFD93D",
+//     "#6BCB77",
+//     "#4D96FF",
+//     "#6A4C93",
+//     "#00B8A9",
+//   ];
+//   const color = palette[Math.abs(h) % palette.length];
+//   const code = String(Math.abs(h) % 10000).padStart(4, "0");
+//   return { color, code };
+// }
+
+// export default function App() {
+//   const userId = "user-123"; // TODO: replace with real auth/user id
+//   const [peers, setPeers] = useState<Meta[]>([]);
+//   const [match, setMatch] = useState<{ color: string; code: string } | null>(
+//     null
+//   );
+//   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
+//   const acceptTarget = useRef<string | null>(null);
+
+//   useEffect(() => {
+//     // Everyone joins the same demo room. Later, replace with a geohash cell string.
+//     const channel = supabase.channel("cell:demo", {
+//       config: { presence: { key: userId } },
+//     });
+
+//     // Presence updates
+//     channel.on("presence", { event: "sync" }, () => {
+//       const state = channel.presenceState();
+
+//       // Coerce the library’s loose type to what we actually track.
+//       const all = (Object.values(state).flat() as unknown as any[])
+//         .map((p): Meta => ({ id: p.id, name: p.name })) // pick only what you need
+//         .filter((p) => p.id !== userId);
+
+//       setPeers(all);
+//     });
+
+//     // Accept handshake
+//     channel.on("broadcast", { event: "accept" }, ({ payload }) => {
+//       const { from, to } = payload as { from: string; to: string };
+//       if (to === userId && acceptTarget.current === from) {
+//         const { color, code } = pairColorAndCode(userId, from);
+//         setMatch({ color, code });
+//         channel.send({
+//           type: "broadcast",
+//           event: "matched",
+//           payload: { a: userId, b: from, color, code },
+//         });
+//       }
+//     });
+
+//     // Matched message (either side)
+//     channel.on("broadcast", { event: "matched" }, ({ payload }) => {
+//       const { a, b, color, code } = payload as {
+//         a: string;
+//         b: string;
+//         color: string;
+//         code: string;
+//       };
+//       if (a === userId || b === userId) setMatch({ color, code });
+//     });
+
+//     // Subscribe and advertise our presence
+//     channel.subscribe(async (status) => {
+//       if (status === "SUBSCRIBED") {
+//         const me: Meta = { id: userId, name: "You" };
+//         await channel.track(me); // <-- no <Meta> here
+//       }
+//     });
+
+//     channelRef.current = channel;
+//     return () => {
+//       supabase.removeChannel(channel);
+//     };
+//   }, []);
+
+//   const sendAccept = (toId: string) => {
+//     acceptTarget.current = toId;
+//     channelRef.current?.send({
+//       type: "broadcast",
+//       event: "accept",
+//       payload: { from: userId, to: toId },
+//     });
+//   };
+
+//   // Matched screen
+//   if (match) {
+//     return (
+//       <SafeAreaView
+//         style={{
+//           flex: 1,
+//           backgroundColor: match.color,
+//           alignItems: "center",
+//           justifyContent: "center",
+//         }}
+//       >
+//         <Text style={{ fontSize: 24, color: "white", fontWeight: "700" }}>
+//           Matched!
+//         </Text>
+//         <Text style={{ fontSize: 18, color: "white", marginTop: 8 }}>
+//           Code: {match.code}
+//         </Text>
+//         <Text
+//           style={{ fontSize: 14, color: "white", marginTop: 8, opacity: 0.9 }}
+//         >
+//           Find the person with the same color & code.
+//         </Text>
+//       </SafeAreaView>
+//     );
+//   }
+
+//   // List peers
+//   return (
+//     <SafeAreaView style={{ flex: 1, padding: 16 }}>
+//       <Text style={{ fontSize: 20, fontWeight: "700" }}>
+//         Peers in cell:demo
+//       </Text>
+//       <FlatList
+//         style={{ marginTop: 12 }}
+//         data={peers}
+//         keyExtractor={(p) => p.id}
+//         renderItem={({ item }) => (
+//           <View
+//             style={{
+//               padding: 12,
+//               borderWidth: 1,
+//               borderRadius: 12,
+//               marginBottom: 12,
+//             }}
+//           >
+//             <Text style={{ fontWeight: "600" }}>{item.name}</Text>
+//             <Text style={{ opacity: 0.7 }}>{item.id}</Text>
+//             <View style={{ flexDirection: "row", gap: 8, marginTop: 8 }}>
+//               <TouchableOpacity
+//                 onPress={() => sendAccept(item.id)}
+//                 style={{
+//                   padding: 10,
+//                   backgroundColor: "#4D96FF",
+//                   borderRadius: 8,
+//                 }}
+//               >
+//                 <Text style={{ color: "white" }}>Accept</Text>
+//               </TouchableOpacity>
+//               <TouchableOpacity
+//                 style={{
+//                   padding: 10,
+//                   backgroundColor: "#eee",
+//                   borderRadius: 8,
+//                 }}
+//               >
+//                 <Text>Pass</Text>
+//               </TouchableOpacity>
+//             </View>
+//           </View>
+//         )}
+//         ListEmptyComponent={
+//           <Text style={{ marginTop: 16, opacity: 0.7 }}>
+//             No one else here yet.
+//           </Text>
+//         }
+//       />
+//     </SafeAreaView>
+//   );
+// }
+//--------------------------------------------------------------------------------------------------
+// CODE AFTER TUTORIAL
+// The basic starting point I think
+// import { StatusBar } from "expo-status-bar";
+// import { StyleSheet, Text, View } from "react-native";
+
+// export default function App() {
+//   return (
+//     <View style={styles.container}>
+//       <Text>Welcome to Proximity App</Text>
+//       <StatusBar style="auto" />
+//     </View>
+//   );
+// }
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: "#fff",
+//     alignItems: "center",
+//     justifyContent: "center",
+//   },
+// });
+//=================================================================
+import { StatusBar } from "expo-status-bar";
+import { StyleSheet, View } from "react-native";
+import Home from "./src/screens/Home"; // <-- NOTE: src/screens
 
 export default function App() {
-  const userId = "user-123"; // TODO: replace with real auth/user id
-  const [peers, setPeers] = useState<Meta[]>([]);
-  const [match, setMatch] = useState<{ color: string; code: string } | null>(
-    null
-  );
-  const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
-  const acceptTarget = useRef<string | null>(null);
-
-  useEffect(() => {
-    // Everyone joins the same demo room. Later, replace with a geohash cell string.
-    const channel = supabase.channel("cell:demo", {
-      config: { presence: { key: userId } },
-    });
-
-    // Presence updates
-    channel.on("presence", { event: "sync" }, () => {
-      const state = channel.presenceState();
-
-      // Coerce the library’s loose type to what we actually track.
-      const all = (Object.values(state).flat() as unknown as any[])
-        .map((p): Meta => ({ id: p.id, name: p.name })) // pick only what you need
-        .filter((p) => p.id !== userId);
-
-      setPeers(all);
-    });
-
-    // Accept handshake
-    channel.on("broadcast", { event: "accept" }, ({ payload }) => {
-      const { from, to } = payload as { from: string; to: string };
-      if (to === userId && acceptTarget.current === from) {
-        const { color, code } = pairColorAndCode(userId, from);
-        setMatch({ color, code });
-        channel.send({
-          type: "broadcast",
-          event: "matched",
-          payload: { a: userId, b: from, color, code },
-        });
-      }
-    });
-
-    // Matched message (either side)
-    channel.on("broadcast", { event: "matched" }, ({ payload }) => {
-      const { a, b, color, code } = payload as {
-        a: string;
-        b: string;
-        color: string;
-        code: string;
-      };
-      if (a === userId || b === userId) setMatch({ color, code });
-    });
-
-    // Subscribe and advertise our presence
-    channel.subscribe(async (status) => {
-      if (status === "SUBSCRIBED") {
-        const me: Meta = { id: userId, name: "You" };
-        await channel.track(me); // <-- no <Meta> here
-      }
-    });
-
-    channelRef.current = channel;
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
-
-  const sendAccept = (toId: string) => {
-    acceptTarget.current = toId;
-    channelRef.current?.send({
-      type: "broadcast",
-      event: "accept",
-      payload: { from: userId, to: toId },
-    });
-  };
-
-  // Matched screen
-  if (match) {
-    return (
-      <SafeAreaView
-        style={{
-          flex: 1,
-          backgroundColor: match.color,
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Text style={{ fontSize: 24, color: "white", fontWeight: "700" }}>
-          Matched!
-        </Text>
-        <Text style={{ fontSize: 18, color: "white", marginTop: 8 }}>
-          Code: {match.code}
-        </Text>
-        <Text
-          style={{ fontSize: 14, color: "white", marginTop: 8, opacity: 0.9 }}
-        >
-          Find the person with the same color & code.
-        </Text>
-      </SafeAreaView>
-    );
-  }
-
-  // List peers
   return (
-    <SafeAreaView style={{ flex: 1, padding: 16 }}>
-      <Text style={{ fontSize: 20, fontWeight: "700" }}>
-        Peers in cell:demo
-      </Text>
-      <FlatList
-        style={{ marginTop: 12 }}
-        data={peers}
-        keyExtractor={(p) => p.id}
-        renderItem={({ item }) => (
-          <View
-            style={{
-              padding: 12,
-              borderWidth: 1,
-              borderRadius: 12,
-              marginBottom: 12,
-            }}
-          >
-            <Text style={{ fontWeight: "600" }}>{item.name}</Text>
-            <Text style={{ opacity: 0.7 }}>{item.id}</Text>
-            <View style={{ flexDirection: "row", gap: 8, marginTop: 8 }}>
-              <TouchableOpacity
-                onPress={() => sendAccept(item.id)}
-                style={{
-                  padding: 10,
-                  backgroundColor: "#4D96FF",
-                  borderRadius: 8,
-                }}
-              >
-                <Text style={{ color: "white" }}>Accept</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={{
-                  padding: 10,
-                  backgroundColor: "#eee",
-                  borderRadius: 8,
-                }}
-              >
-                <Text>Pass</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
-        ListEmptyComponent={
-          <Text style={{ marginTop: 16, opacity: 0.7 }}>
-            No one else here yet.
-          </Text>
-        }
-      />
-    </SafeAreaView>
+    <View style={styles.container}>
+      <Home />
+      <StatusBar style="auto" />
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});

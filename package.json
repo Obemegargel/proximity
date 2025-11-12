@@ -1,11 +1,14 @@
 {
   "dependencies": {
-    "@supabase/supabase-js": "^2.76.0",
+    "@expo/config-plugins": "^54.0.2",
+    "@supabase/supabase-js": "^2.81.1",
+    "dotenv": "^17.2.3",
     "expo": "54.0.13",
     "expo-crypto": "^15.0.7",
     "expo-dev-client": "~6.0.15",
     "expo-device": "~8.0.9",
     "expo-location": "^19.0.7",
+    "expo-status-bar": "~3.0.8",
     "ngeohash": "^0.6.3",
     "react": "19.1.0",
     "react-dom": "19.1.0",
