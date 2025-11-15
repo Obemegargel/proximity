@@ -5,15 +5,17 @@ import { supabase } from "../../supabaseClient";
 
 export default function SignUpScreen() {
   // are these states? what is a state and what does that mean/do?
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [errorMessage, setErrorMessage] = useState(""); // do I need this? should it be named something else?
+  const [loading, setLoading] = useState(false);
 
   const handleSignUp = async () => {
     setErrorMessage("");
 
     // 1) Create auth user
-    const { data, error } = await supabase.auth.signUp({ username, password });
+    const { data, error } = await supabase.auth.signUp({ email, password });
     if (error) {
       setErrorMessage(error.message);
       return;
@@ -46,6 +48,15 @@ export default function SignUpScreen() {
       />
 
       <TextInput
+        placeholder="Email"
+        autoCapitalize="none"
+        keyboardType="email-address"
+        value={email}
+        onChangeText={setEmail}
+        style={{ marginBottom: 10 }}
+      />
+
+      <TextInput
         placeholder="Password"
         secureTextEntry
         value={password}
@@ -56,7 +67,7 @@ export default function SignUpScreen() {
       <Button title="Sign Up" onPress={handleSignUp} />
 
       {errorMessage ? (
-        <text style={{ color: "red", marginTop: 10 }}>{errorMessage}</text>
+        <Text style={{ color: "red", marginTop: 10 }}>{errorMessage}</Text>
       ) : null}
     </View>
   );
