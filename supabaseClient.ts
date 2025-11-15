@@ -1,4 +1,5 @@
 //_____________________________________________________________________________________________different version
+// Most recent fully working version
 import { createClient } from "@supabase/supabase-js";
 
 const url = process.env.EXPO_PUBLIC_SUPABASE_URL;
@@ -10,7 +11,7 @@ if (!url || !anon) {
   );
 }
 
-console.log("SB URL:", process.env.EXPO_PUBLIC_SUPABASE_URL); //just for testing can delete once works if you want
+// console.log("SB URL:", process.env.EXPO_PUBLIC_SUPABASE_URL); //just for testing can delete once works if you want
 
 export const supabase = createClient(url, anon);
 
