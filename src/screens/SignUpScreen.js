@@ -1,3 +1,4 @@
+// MOST RECENT WORKING CODE
 // Import needed functions from files etc
 import React, { useState } from "react"; // Might not need to save it as React but I do need useState, I choose to keep it how it is.
 import { View, TextInput, Button, Text } from "react-native"; //Do I need this? What does it do?
@@ -72,3 +73,19 @@ export default function SignUpScreen() {
     </View>
   );
 }
+// ==================================================================
+// import { signUpWithEmail } from "../services/user";
+
+// const handleSignUp = async () => {
+//   setErrorMessage("");
+//   setLoading(true);
+//   try {
+//     await signUpWithEmail({ email, password, username });
+//     alert("Account Created Successfully!");
+//     // later: navigation.replace("Login");
+//   } catch (err) {
+//     setErrorMessage(err.message);
+//   } finally {
+//     setLoading(false);
+//   }
+// };
