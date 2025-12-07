@@ -161,9 +161,34 @@
 // }
 //=================================================================
 // most recent nav that works in expo go only
-import React from "react";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+// import React from "react";
+// import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
+// import Home from "../screens/Home";
+// import LoginScreen from "../screens/LoginScreen";
+// import SignUpScreen from "../screens/SignUpScreen";
+
+// const Stack = createNativeStackNavigator();
+
+// export default function AppNavigator() {
+//   return (
+//     <Stack.Navigator initialRouteName="SignUp">
+//       <Stack.Screen
+//         name="SignUp"
+//         component={SignUpScreen}
+//         options={{ title: "Create Account" }}
+//       />
+//       <Stack.Screen
+//         name="Login"
+//         component={LoginScreen}
+//         options={{ title: "Sign In" }}
+//       />
+//       <Stack.Screen name="Home" component={Home} options={{ title: "Home" }} />
+//     </Stack.Navigator>
+//   );
+// }
+//=================================================================
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Home from "../screens/Home";
 import LoginScreen from "../screens/LoginScreen";
 import SignUpScreen from "../screens/SignUpScreen";
@@ -172,16 +197,16 @@ const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
   return (
-    <Stack.Navigator initialRouteName="SignUp">
-      <Stack.Screen
-        name="SignUp"
-        component={SignUpScreen}
-        options={{ title: "Create Account" }}
-      />
+    <Stack.Navigator initialRouteName="Login">
       <Stack.Screen
         name="Login"
         component={LoginScreen}
         options={{ title: "Sign In" }}
+      />
+      <Stack.Screen
+        name="SignUp"
+        component={SignUpScreen}
+        options={{ title: "Create Account" }}
       />
       <Stack.Screen name="Home" component={Home} options={{ title: "Home" }} />
     </Stack.Navigator>

@@ -155,7 +155,7 @@ export default function SignUpScreen({ navigation }) {
         disabled={loading}
       />
 
-      {/* this is jsx */}
+      {/* this is jsx, possibly the whole return is jsx */}
       {errorMessage ? (
         <Text style={{ color: "red", marginTop: 10 }}>{errorMessage}</Text>
       ) : null}
@@ -163,7 +163,7 @@ export default function SignUpScreen({ navigation }) {
       {/* this lets users jump to the login screen without signing up again. */}
       <Text
         style={{ marginTop: 20, color: "blue" }}
-        onPress={() => navigation.navigate("login")}
+        onPress={() => navigation.navigate("Login")}
       >
         Already have an account? Sign In
       </Text>
