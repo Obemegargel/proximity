@@ -93,11 +93,12 @@
 // ==================================================================
 // src/services/user.js
 // src/screens/SignUpScreen.js
+// this code was visible last time the app worked
 import React, { useState } from "react";
 import { View, TextInput, Button, Text } from "react-native";
 import { signUpWithEmail } from "../services/user";
 
-export default function SignUpScreen() {
+export default function SignUpScreen({ navigation }) {
   // state for form + UI
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -111,8 +112,9 @@ export default function SignUpScreen() {
 
     try {
       await signUpWithEmail({ email, password, username });
-      alert("Account Created Successfully!");
-      // later: navigation.replace("Login");
+      // alert("Account Created Successfully!");
+      navigation.replace("Login"); // replace makes it so pressing back doesn't go back to sign up
+      // navigation.navigate("Home"); // navigate would let you go back to sign up by pressing back, both work but for auth usually replace is best.
     } catch (err) {
       setErrorMessage(err.message);
     } finally {
@@ -153,9 +155,46 @@ export default function SignUpScreen() {
         disabled={loading}
       />
 
+      {/* this is jsx */}
       {errorMessage ? (
         <Text style={{ color: "red", marginTop: 10 }}>{errorMessage}</Text>
       ) : null}
+
+      {/* this lets users jump to the login screen without signing up again. */}
+      <Text
+        style={{ marginTop: 20, color: "blue" }}
+        onPress={() => navigation.navigate("login")}
+      >
+        Already have an account? Sign In
+      </Text>
     </View>
   );
 }
+// ==================================================================
+// import React, { useState } from "react";
+// import { View, TextInput, Button, Text } from "react-native";
+// import { signUpWithEmail } from "../services/user";
+
+// export default function SignUpScreen() {
+//   const [email, setEmail] = useState("");
+//   const [password, setPassword] = useState("");
+//   const [username, setUsername] = useState("");
+//   const [errorMessage, setErrorMessage] = useState("");
+//   const [loading, setLoading] = useState(false);
+
+//   const handleSignUp = async () => {
+//     setErrorMessage("");
+//     setLoading(true);
+
+//     try {
+//       await signUpWithEmail({ email, password, username });
+//       alert("Account Created Successfully!");
+//     } catch (err) {
+//       setErrorMessage(err.message);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   return <View style={{ padding: 20 }}>{/* inputs... */}</View>;
+// }
