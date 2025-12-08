@@ -66,31 +66,75 @@
 //   return data.user;
 // }
 // ==================================================================
+// most recent that works
+// import { supabase } from "../../supabaseClient";
+
+// // SIGN UP – needs username
+// export async function signUpWithEmail({ email, password, username }) {
+//   const { data, error } = await supabase.auth.signUp({ email, password });
+//   if (error) throw error;
+
+//   const user = data.user;
+
+//   const { error: profileError } = await supabase.from("profiles").insert({
+//     id: user.id,
+//     username,
+//   });
+//   if (profileError) throw profileError;
+
+//   return user;
+// }
+
+// // LOGIN – NO username here
+// export async function signInWithEmail({ email, password }) {
+//   const { data, error } = await supabase.auth.signInWithPassword({
+//     email,
+//     password,
+//   });
+//   if (error) throw error;
+
+//   return data.user;
+// }
+// ==================================================================
 import { supabase } from "../../supabaseClient";
 
-// SIGN UP – needs username
-export async function signUpWithEmail({ email, password, username }) {
-  const { data, error } = await supabase.auth.signUp({ email, password });
+// ... your signUpWithEmail and signInWithEmail are already here ...
+
+// Get the currently logged-in user's profile (username)
+export async function getCurrentUserProfile() {
+  // 1) Get currently logged-in auth user
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError) throw userError;
+  if (!user) {
+    throw new Error("No logged-in user");
+  }
+
+  // 2) Look up matching row in profiles table
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("username")
+    .eq("id", user.id)
+    .single();
+
   if (error) throw error;
 
-  const user = data.user;
-
-  const { error: profileError } = await supabase.from("profiles").insert({
-    id: user.id,
-    username,
-  });
-  if (profileError) throw profileError;
-
-  return user;
+  return {
+    userId: user.id,
+    username: data.username,
+  };
 }
 
-// LOGIN – NO username here
-export async function signInWithEmail({ email, password }) {
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
-  if (error) throw error;
+// Fetch all interests (id + name) from interests table
+export async function fetchInterests() {
+  const { data, error } = await supabase
+    .from("interests")
+    .select("interest_id, name")
+    .order("name", { ascending: true });
 
-  return data.user;
+  if (error) throw error;
+  return data || [];
 }
