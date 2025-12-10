@@ -96,9 +96,49 @@
 //   return data.user;
 // }
 // ==================================================================
+
+// Supabase is a client instance
+// Datatype: JavaScript object created by createClient(url, key)
+// it contains properties like:
+// .auth – methods for authentication (sign up, sign in, sign out, get user, etc.)
+// .from - query builder for database tables
+// .rpc - call Postgres functions
+// .storage - methods for interacting with Supabase Storage / bucket management\
+/*
+// example:
+  supabase = {
+  auth: { signIn, signOut, getUser, ... },
+  from: (tableName) => ({ select, insert, update, ... }),
+  storage: { from(), upload(), ... }
+  }
+  */
 import { supabase } from "../../supabaseClient";
 
 // ... your signUpWithEmail and signInWithEmail are already here ...
+export async function signUpWithEmail({ email, password, username }) {
+  const { data, error } = await supabase.auth.signUp({ email, password });
+  if (error) throw error;
+
+  const user = data.user;
+
+  const { error: profileError } = await supabase.from("profiles").insert({
+    id: user.id,
+    username,
+  });
+  if (profileError) throw profileError;
+
+  return user;
+}
+// // LOGIN – NO username here
+export async function signInWithEmail({ email, password }) {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+  if (error) throw error;
+
+  return data.user;
+}
 
 // Get the currently logged-in user's profile (username)
 export async function getCurrentUserProfile() {
@@ -126,6 +166,12 @@ export async function getCurrentUserProfile() {
     userId: user.id,
     username: data.username,
   };
+  /*
+  {
+  userId: "uuid-string",
+  username: "someName"
+  } 
+  */
 }
 
 // Fetch all interests (id + name) from interests table
