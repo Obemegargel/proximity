@@ -181,6 +181,8 @@ export async function fetchInterests() {
     .select("interest_id, name")
     .order("name", { ascending: true });
 
+  console.log("fetchInterests raw:", { data, error }); // for debugging
+
   if (error) throw error;
   return data || [];
 }

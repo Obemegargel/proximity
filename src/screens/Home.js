@@ -222,6 +222,7 @@ const Home = () => {
       // 2) Get all interests
       const allInterests = await fetchInterests();
       setInterests(allInterests);
+      console.log("allInterests from Supabase:", allInterests); // for debugging
     } catch (err) {
       console.log("Home load error:", err);
       setError(err.message || "Something went wrong loading data");
@@ -240,9 +241,12 @@ const Home = () => {
     if (!q) return interests;
 
     // startsWith search (e.g., "sk" matches "skiing")
-    return interests.filter((item) => item.name.toLowerCase().startsWith(q));
+    // return interests.filter((item) => item.name.toLowerCase().startsWith(q));
+    return interests.filter((item) => item.name.toLowerCase().includes(q));
   }, [search, interests]);
 
+  console.log("search:", search); //for debugging
+  console.log("filteredInterests:", filteredInterests); //for debugging
   if (loading) {
     return (
       <View style={styles.center}>
