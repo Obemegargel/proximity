@@ -7,7 +7,9 @@ import {
 } from "../services/user";
 
 export default function InterestDetailScreen({ route, navigation }) {
+  console.log("InterestDetail route.params:", route.params); // for debugging
   const { interestId, interestName } = route.params;
+  console.log("Destructured interestId:", interestId); // for debugging
 
   const [score, setScore] = useState(""); // textbox value as string
   const [loading, setLoading] = useState(false);

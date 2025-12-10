@@ -475,7 +475,7 @@ const Home = ({ navigation }) => {
                 onPress={() =>
                   navigation.navigate("InterestDetail", {
                     //InterestDetail is the name of the file I think, it used to be InterestDetailScreen but I renamed the file
-                    interestId: item.interment_id,
+                    interestId: item.interest_id,
                     interestName: item.name,
                   })
                 }

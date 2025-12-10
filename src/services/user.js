@@ -201,6 +201,7 @@ async function getCurrentUserId() {
 }
 
 // Get existing score for one interest for this user (if any)
+// { interestId } this is saying this function expects an object with interestId property as its parameter
 export async function getInterestScore({ interestId }) {
   const userId = await getCurrentUserId();
 
@@ -219,6 +220,7 @@ export async function getInterestScore({ interestId }) {
 
 // Save or update score 1–5
 export async function saveInterestScore({ interestId, score }) {
+  console.log("saveInterestScore called with:", { interestId, score }); // for debugging
   const userId = await getCurrentUserId();
 
   // simplest: upsert based on (user_id, is_interest_id)
@@ -237,6 +239,7 @@ export async function saveInterestScore({ interestId, score }) {
 }
 
 // Delete the score row for this user + interest
+// { interestId } this is saying this function expects an object with interestId property as its parameter
 export async function deleteInterestScore({ interestId }) {
   const userId = await getCurrentUserId();
 
