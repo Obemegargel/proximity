@@ -391,6 +391,7 @@ import {
   fetchUserInterestScores,
 } from "../services/user";
 import { Pressable } from "react-native"; //might not work yet
+import { useFocusEffect } from "@react-navigation/native";
 
 // why does the { navigation } work here but not in previous versions? my guess because navigation is for the interest inside this whole thing
 const Home = ({ navigation }) => {
@@ -446,9 +447,15 @@ const Home = ({ navigation }) => {
     }
   };
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  // useEffect(() => {
+  //   loadData();
+  // }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      // This runs every time the Home screen comes into focus
+      loadData();
+    }, [])
+  );
 
   // Filter interests based on search text
   const filteredInterests = useMemo(() => {
