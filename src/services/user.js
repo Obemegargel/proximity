@@ -254,3 +254,18 @@ export async function deleteInterestScore({ interestId }) {
 // Note: For upsert to work cleanly, you’ll eventually want a unique constraint on
 // (user_id, is_interest_id) in interest_scores. For now, conceptually, this is
 // “insert if none, replace if exists”.
+
+// Fetch all interest scores for the current user
+// Fetch all interest scores for the current user
+export async function fetchUserInterestScores() {
+  const userId = await getCurrentUserId();
+
+  const { data, error } = await supabase
+    .from("interest_scores")
+    .select("is_interest_id, score")
+    .eq("user_id", userId);
+
+  if (error) throw error;
+
+  return data || [];
+}

@@ -375,7 +375,7 @@
 //   },
 // });
 // ==============================================================
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, use } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -385,7 +385,11 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { getCurrentUserProfile, fetchInterests } from "../services/user";
+import {
+  getCurrentUserProfile,
+  fetchInterests,
+  fetchUserInterestScores,
+} from "../services/user";
 import { Pressable } from "react-native"; //might not work yet
 
 // why does the { navigation } work here but not in previous versions? my guess because navigation is for the interest inside this whole thing
@@ -395,6 +399,8 @@ const Home = ({ navigation }) => {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  // const [fetchUserInterestScores, setUserInterests] = useState([]);
+  const [userInterests, setUserInterests] = useState([]); // hopefull this is in the right spot. it is for fetching user's interests
 
   const loadData = async () => {
     try {
@@ -409,6 +415,29 @@ const Home = ({ navigation }) => {
       const allInterests = await fetchInterests();
       setInterests(allInterests);
       console.log("allInterests from Supabase:", allInterests); // for debugging
+
+      // 3) Get user's interest scores
+      const scores = await fetchUserInterestScores();
+
+      // Build a lookup map from interest_id -> interest object
+      const interestById = {};
+      for (const interest of allInterests) {
+        interestById[interest.interest_id] = interest;
+      }
+
+      // 4) Combine into "userInterests" with name + score
+      const combined = scores
+        .map((s) => {
+          const interest = interestById[s.is_interest_id];
+          if (!interest) return null;
+          return {
+            ...interest,
+            score: s.score,
+          };
+        })
+        .filter(Boolean);
+
+      setUserInterests(combined);
     } catch (err) {
       console.log("Home load error:", err);
       setError(err.message || "Something went wrong loading data");
@@ -496,8 +525,33 @@ const Home = ({ navigation }) => {
 
       {/* Interests list (we'll fill this later) */}
       <Text style={styles.sectionTitle}>Interests</Text>
-      {/* placeholder until you hook it up */}
-      <Text>(interests list will go here later)</Text>
+
+      <View style={styles.searchResultsBox}>
+        <FlatList
+          data={userInterests}
+          keyExtractor={(item) => item.interest_id?.toString() ?? item.name}
+          renderItem={({ item }) => (
+            <Pressable
+              style={styles.interestRow}
+              onPress={() =>
+                navigation.navigate("InterestDetail", {
+                  interestId: item.interest_id,
+                  interestName: item.name,
+                })
+              }
+            >
+              <Text style={styles.interestText}>
+                {item.name} — Score: {item.score}
+              </Text>
+            </Pressable>
+          )}
+          ListEmptyComponent={
+            <Text style={{ padding: 8 }}>
+              You haven’t scored any interests yet.
+            </Text>
+          }
+        />
+      </View>
     </SafeAreaView>
   );
 };
