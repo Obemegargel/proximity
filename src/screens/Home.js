@@ -191,6 +191,190 @@
 //   },
 // });
 // ==============================================================
+// most recent working version with search feature
+// import React, { useEffect, useState, useMemo } from "react";
+// import {
+//   ActivityIndicator,
+//   FlatList,
+//   SafeAreaView,
+//   StyleSheet,
+//   Text,
+//   TextInput,
+//   View,
+// } from "react-native";
+// import { getCurrentUserProfile, fetchInterests } from "../services/user";
+
+// const Home = () => {
+//   const [username, setUsername] = useState("");
+//   const [interests, setInterests] = useState([]);
+//   const [search, setSearch] = useState("");
+//   const [loading, setLoading] = useState(false);
+//   const [error, setError] = useState("");
+
+//   const loadData = async () => {
+//     try {
+//       setLoading(true);
+//       setError("");
+
+//       // 1) Get logged-in user's username
+//       const profile = await getCurrentUserProfile();
+//       setUsername(profile.username || "");
+
+//       // 2) Get all interests
+//       const allInterests = await fetchInterests();
+//       setInterests(allInterests);
+//       console.log("allInterests from Supabase:", allInterests); // for debugging
+//     } catch (err) {
+//       console.log("Home load error:", err);
+//       setError(err.message || "Something went wrong loading data");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   useEffect(() => {
+//     loadData();
+//   }, []);
+
+//   // Filter interests based on search text
+//   const filteredInterests = useMemo(() => {
+//     const q = search.trim().toLowerCase();
+//     if (!q) return interests;
+
+//     // startsWith search (e.g., "sk" matches "skiing")
+//     // return interests.filter((item) => item.name.toLowerCase().startsWith(q));
+//     return interests.filter((item) => item.name.toLowerCase().includes(q));
+//   }, [search, interests]);
+
+//   console.log("search:", search); //for debugging
+//   console.log("filteredInterests:", filteredInterests); //for debugging
+//   if (loading) {
+//     return (
+//       <View style={styles.center}>
+//         <ActivityIndicator size="large" />
+//       </View>
+//     );
+//   }
+
+//   if (error) {
+//     return (
+//       <View style={styles.center}>
+//         <Text style={{ color: "red" }}>{error}</Text>
+//       </View>
+//     );
+//   }
+
+//   return (
+//     <SafeAreaView style={styles.container}>
+//       {/* Username at top */}
+//       <Text style={styles.usernameText}>{username || "username"}</Text>
+
+//       {/* Search Interests section */}
+//       <View style={styles.searchSection}>
+//         <Text style={styles.sectionTitle}>Search Interests</Text>
+
+//         <TextInput
+//           style={styles.searchInput}
+//           placeholder="type search..."
+//           value={search}
+//           onChangeText={setSearch}
+//         />
+
+//         <View style={styles.searchResultsBox}>
+//           <FlatList
+//             data={filteredInterests}
+//             keyExtractor={(item) => item.interest_id?.toString() ?? item.name}
+//             renderItem={({ item }) => (
+//               <View style={styles.interestRow}>
+//                 <Text style={styles.interestText}>{item.name}</Text>
+//               </View>
+//             )}
+//             ListEmptyComponent={
+//               <Text style={{ padding: 8 }}>No matching interests.</Text>
+//             }
+//           />
+//         </View>
+//       </View>
+
+//       {/* Green button that does nothing for now */}
+//       <View style={styles.buttonPlaceholder}>
+//         <Text style={styles.buttonText}>
+//           Search for people with similar interests
+//         </Text>
+//       </View>
+
+//       {/* Interests list (we'll fill this later) */}
+//       <Text style={styles.sectionTitle}>Interests</Text>
+//       {/* placeholder until you hook it up */}
+//       <Text>(interests list will go here later)</Text>
+//     </SafeAreaView>
+//   );
+// };
+
+// export default Home;
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     padding: 16,
+//     backgroundColor: "#ddd", // roughly like your mockup
+//   },
+//   center: {
+//     flex: 1,
+//     justifyContent: "center",
+//     alignItems: "center",
+//   },
+//   usernameText: {
+//     fontSize: 28,
+//     fontWeight: "bold",
+//     textAlign: "center",
+//     marginBottom: 16,
+//     textDecorationLine: "underline",
+//   },
+//   sectionTitle: {
+//     fontSize: 18,
+//     fontWeight: "bold",
+//     textDecorationLine: "underline",
+//     marginBottom: 8,
+//   },
+//   searchSection: {
+//     marginBottom: 16,
+//   },
+//   searchInput: {
+//     backgroundColor: "white",
+//     paddingHorizontal: 8,
+//     paddingVertical: 6,
+//     borderRadius: 4,
+//     marginBottom: 8,
+//   },
+//   searchResultsBox: {
+//     backgroundColor: "white",
+//     borderRadius: 4,
+//     maxHeight: 200,
+//   },
+//   interestRow: {
+//     paddingVertical: 6,
+//     paddingHorizontal: 8,
+//     borderBottomWidth: StyleSheet.hairlineWidth,
+//     borderBottomColor: "#ccc",
+//   },
+//   interestText: {
+//     fontSize: 16,
+//   },
+//   buttonPlaceholder: {
+//     marginVertical: 16,
+//     padding: 12,
+//     backgroundColor: "lightgreen",
+//     borderWidth: 1,
+//     borderColor: "green",
+//     alignItems: "center",
+//     borderRadius: 4,
+//   },
+//   buttonText: {
+//     fontWeight: "600",
+//   },
+// });
+// ==============================================================
 import React, { useEffect, useState, useMemo } from "react";
 import {
   ActivityIndicator,
@@ -202,8 +386,10 @@ import {
   View,
 } from "react-native";
 import { getCurrentUserProfile, fetchInterests } from "../services/user";
+import { Pressable } from "react-native"; //might not work yet
 
-const Home = () => {
+// why does the { navigation } work here but not in previous versions? my guess because navigation is for the interest inside this whole thing
+const Home = ({ navigation }) => {
   const [username, setUsername] = useState("");
   const [interests, setInterests] = useState([]);
   const [search, setSearch] = useState("");
@@ -284,13 +470,19 @@ const Home = () => {
             data={filteredInterests}
             keyExtractor={(item) => item.interest_id?.toString() ?? item.name}
             renderItem={({ item }) => (
-              <View style={styles.interestRow}>
+              <Pressable
+                style={styles.interestRow}
+                onPress={() =>
+                  navigation.navigate("InterestDetail", {
+                    //InterestDetail is the name of the file I think, it used to be InterestDetailScreen but I renamed the file
+                    interestId: item.interment_id,
+                    interestName: item.name,
+                  })
+                }
+              >
                 <Text style={styles.interestText}>{item.name}</Text>
-              </View>
+              </Pressable>
             )}
-            ListEmptyComponent={
-              <Text style={{ padding: 8 }}>No matching interests.</Text>
-            }
           />
         </View>
       </View>

@@ -186,3 +186,68 @@ export async function fetchInterests() {
   if (error) throw error;
   return data || [];
 }
+
+// ______________this is addeditional code for interest scores______________
+
+// Get the current logged-in user's id (helper)
+async function getCurrentUserId() {
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+  if (error) throw error;
+  if (!user) throw new Error("No logged-in user");
+  return user.id;
+}
+
+// Get existing score for one interest for this user (if any)
+export async function getInterestScore({ interestId }) {
+  const userId = await getCurrentUserId();
+
+  const { data, error } = await supabase
+    .from("interest_scores")
+    .select("score")
+    .eq("is_interest_id", interestId)
+    .eq("user_id", userId)
+    .maybeSingle(); // returns null if no row
+
+  if (error) throw error;
+
+  // data may be null if the user has no score yet
+  return data?.score ?? null;
+}
+
+// Save or update score 1–5
+export async function saveInterestScore({ interestId, score }) {
+  const userId = await getCurrentUserId();
+
+  // simplest: upsert based on (user_id, is_interest_id)
+  const { error } = await supabase.from("interest_scores").upsert(
+    {
+      is_interest_id: interestId,
+      score,
+      user_id: userId,
+    },
+    {
+      onConflict: "user_id,is_interest_id", // ensure unique constraint on these two
+    }
+  );
+
+  if (error) throw error;
+}
+
+// Delete the score row for this user + interest
+export async function deleteInterestScore({ interestId }) {
+  const userId = await getCurrentUserId();
+
+  const { error } = await supabase
+    .from("interest_scores")
+    .delete()
+    .eq("is_interest_id", interestId)
+    .eq("user_id", userId);
+
+  if (error) throw error;
+}
+// Note: For upsert to work cleanly, you’ll eventually want a unique constraint on
+// (user_id, is_interest_id) in interest_scores. For now, conceptually, this is
+// “insert if none, replace if exists”.
