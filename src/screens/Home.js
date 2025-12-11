@@ -384,13 +384,15 @@ import {
   Text,
   TextInput,
   View,
+  Pressable, // I added this, then error
+  Alert, // I added this, then error
 } from "react-native";
 import {
   getCurrentUserProfile,
   fetchInterests,
   fetchUserInterestScores,
+  findNearbyMatches,
 } from "../services/user";
-import { Pressable } from "react-native"; //might not work yet
 import { useFocusEffect } from "@react-navigation/native";
 
 // why does the { navigation } work here but not in previous versions? my guess because navigation is for the interest inside this whole thing
@@ -445,6 +447,23 @@ const Home = ({ navigation }) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // handle Finding Matches function
+  const handleFindMatches = async () => {
+    try {
+      const matches = await findNearbyMatches(10); //search within 10 km
+      console.log("MATCH RESULTS:", matches);
+      // Navigate to a screen to show them (optional)
+      // For now, navigate to LocationScreen (this route already exists)
+      navigation.navigate("LocationScreen", { matches });
+      // Later, when you create MatchesScreen and add it to the navigator:
+      // navigation.navigate("MatchesScreen", { matches });
+    } catch (err) {
+      console.log("Error finding matches:", err);
+      Alert.alert("Error", error.message);
+    }
+    // navigation.navigate("LocationScreen"); // tested handleFindMatches just navigates to LocationScreen
   };
 
   // useEffect(() => {
@@ -529,10 +548,18 @@ const Home = ({ navigation }) => {
           Search for people with similar interests
         </Text>
       </View> */}
-      <Pressable
+      {/* last working code */}
+      {/* <Pressable
         style={styles.buttonPlaceholder}
         onPress={() => navigation.navigate("LocationScreen")}
       >
+        <Text style={styles.buttonText}>
+          Search for people with similar interests
+        </Text>
+      </Pressable> */}
+      {/* experiment code */}
+      {/* might need <View></View> wrapped around this Pressable, but maybe not */}
+      <Pressable style={styles.buttonPlaceholder} onPress={handleFindMatches}>
         <Text style={styles.buttonText}>
           Search for people with similar interests
         </Text>

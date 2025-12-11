@@ -269,3 +269,32 @@ export async function fetchUserInterestScores() {
 
   return data || [];
 }
+
+// location comparing code
+
+export async function findNearbyMatches(radiusKm = 10) {
+  // 1) Get current user id
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError) throw userError;
+  if (!user) throw new Error("No logged-in user");
+
+  // 2) Call the databaase function
+  const { data, error } = await supabase.rpc("find_matches", {
+    p_user_id: user.id,
+    p_radius_km: radiusKm,
+  });
+
+  if (error) throw error;
+
+  // Note;
+  // data is an array like:
+  // [
+  //   { other_user_id, distance_km, shared_interests, avg_score_diff },
+  //   ...
+  // ]
+  return data;
+}

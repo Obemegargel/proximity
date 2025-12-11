@@ -85,6 +85,7 @@ export default function LocationScreen() {
       setLocation(loc);
 
       const { latitude, longitude } = loc.coords; // pulls out just the latitude and longitude from loc
+      // will extract the datetime as well later
 
       // 3) Get current user from Supabase auth
       // access data.user to get user info that would be the whole {user: {id: "uuid...", email: ... "}} the whole object
