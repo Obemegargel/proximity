@@ -193,6 +193,7 @@ import Home from "../screens/Home";
 import LoginScreen from "../screens/LoginScreen";
 import SignUpScreen from "../screens/SignUpScreen";
 import InterestDetailScreen from "../screens/InterestDetailScreen"; // this page doesn't have the stuff yet
+import LocationScreen from "../screens/LocationScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -215,6 +216,7 @@ export default function AppNavigator() {
         component={SignUpScreen}
         options={{ title: "Create Account" }}
       />
+      <Stack.Screen name="LocationScreen" component={LocationScreen} />
       <Stack.Screen name="Home" component={Home} options={{ title: "Home" }} />
     </Stack.Navigator>
   );

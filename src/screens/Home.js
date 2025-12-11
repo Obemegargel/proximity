@@ -523,12 +523,20 @@ const Home = ({ navigation }) => {
         </View>
       </View>
 
-      {/* Green button that does nothing for now */}
+      {/* Green button that does nothing for now
       <View style={styles.buttonPlaceholder}>
         <Text style={styles.buttonText}>
           Search for people with similar interests
         </Text>
-      </View>
+      </View> */}
+      <Pressable
+        style={styles.buttonPlaceholder}
+        onPress={() => navigation.navigate("LocationScreen")}
+      >
+        <Text style={styles.buttonText}>
+          Search for people with similar interests
+        </Text>
+      </Pressable>
 
       {/* Interests list (we'll fill this later) */}
       <Text style={styles.sectionTitle}>Interests</Text>
