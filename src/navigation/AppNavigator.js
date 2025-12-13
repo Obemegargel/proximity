@@ -188,19 +188,60 @@
 //   );
 // }
 //=================================================================
+// most recent working code
+// import { createNativeStackNavigator } from "@react-navigation/native-stack";
+// import Home from "../screens/Home";
+// import LoginScreen from "../screens/LoginScreen";
+// import SignUpScreen from "../screens/SignUpScreen";
+// import InterestDetailScreen from "../screens/InterestDetailScreen"; // this page doesn't have the stuff yet
+// import LocationScreen from "../screens/LocationScreen";
+// import MatchRevealScreen from "../screens/MatchRevealScreen";
+
+// const Stack = createNativeStackNavigator();
+
+// export default function AppNavigator() {
+//   return (
+//     <Stack.Navigator initialRouteName="Login">
+//       {/* this is the screen for the interest detail page, not done yet. name, how does this relate to the interest_id from the table? I assume it is a different variable in a different file */}
+//       <Stack.Screen
+//         name="InterestDetail"
+//         component={InterestDetailScreen}
+//         options={{ title: "Interest" }}
+//       />
+//       <Stack.Screen
+//         name="Login"
+//         component={LoginScreen}
+//         options={{ title: "Sign In" }}
+//       />
+//       <Stack.Screen
+//         name="SignUp"
+//         component={SignUpScreen}
+//         options={{ title: "Create Account" }}
+//       />
+//       <Stack.Screen
+//         name="MatchReveal"
+//         component={MatchRevealScreen}
+//         options={{ title: "Match" }}
+//       />
+//       <Stack.Screen name="LocationScreen" component={LocationScreen} />
+//       <Stack.Screen name="Home" component={Home} options={{ title: "Home" }} />
+//     </Stack.Navigator>
+//   );
+// }
+// =================================================================
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Home from "../screens/Home";
 import LoginScreen from "../screens/LoginScreen";
 import SignUpScreen from "../screens/SignUpScreen";
-import InterestDetailScreen from "../screens/InterestDetailScreen"; // this page doesn't have the stuff yet
+import InterestDetailScreen from "../screens/InterestDetailScreen";
 import LocationScreen from "../screens/LocationScreen";
+import MatchRevealScreen from "../screens/MatchRevealScreen";
 
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
   return (
     <Stack.Navigator initialRouteName="Login">
-      {/* this is the screen for the interest detail page, not done yet. name, how does this relate to the interest_id from the table? I assume it is a different variable in a different file */}
       <Stack.Screen
         name="InterestDetail"
         component={InterestDetailScreen}
@@ -216,7 +257,16 @@ export default function AppNavigator() {
         component={SignUpScreen}
         options={{ title: "Create Account" }}
       />
-      <Stack.Screen name="LocationScreen" component={LocationScreen} />
+      <Stack.Screen
+        name="LocationScreen"
+        component={LocationScreen}
+        options={{ title: "Location" }}
+      />
+      <Stack.Screen
+        name="MatchReveal"
+        component={MatchRevealScreen}
+        options={{ title: "Match" }}
+      />
       <Stack.Screen name="Home" component={Home} options={{ title: "Home" }} />
     </Stack.Navigator>
   );

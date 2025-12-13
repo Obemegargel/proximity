@@ -96,25 +96,237 @@
 //   return data.user;
 // }
 // ==================================================================
+// MOST RECENT WORKING CODE
+// // Supabase is a client instance
+// // Datatype: JavaScript object created by createClient(url, key)
+// // it contains properties like:
+// // .auth – methods for authentication (sign up, sign in, sign out, get user, etc.)
+// // .from - query builder for database tables
+// // .rpc - call Postgres functions
+// // .storage - methods for interacting with Supabase Storage / bucket management\
+// /*
+// // example:
+//   supabase = {
+//   auth: { signIn, signOut, getUser, ... },
+//   from: (tableName) => ({ select, insert, update, ... }),
+//   storage: { from(), upload(), ... }
+//   }
+//   */
+// import { supabase } from "../../supabaseClient";
 
-// Supabase is a client instance
-// Datatype: JavaScript object created by createClient(url, key)
-// it contains properties like:
-// .auth – methods for authentication (sign up, sign in, sign out, get user, etc.)
-// .from - query builder for database tables
-// .rpc - call Postgres functions
-// .storage - methods for interacting with Supabase Storage / bucket management\
-/*
-// example:
-  supabase = {
-  auth: { signIn, signOut, getUser, ... },
-  from: (tableName) => ({ select, insert, update, ... }),
-  storage: { from(), upload(), ... }
-  }
-  */
+// // ... your signUpWithEmail and signInWithEmail are already here ...
+// export async function signUpWithEmail({ email, password, username }) {
+//   const { data, error } = await supabase.auth.signUp({ email, password });
+//   if (error) throw error;
+
+//   const user = data.user;
+
+//   const { error: profileError } = await supabase.from("profiles").insert({
+//     id: user.id,
+//     username,
+//   });
+//   if (profileError) throw profileError;
+
+//   return user;
+// }
+// // // LOGIN – NO username here
+// export async function signInWithEmail({ email, password }) {
+//   const { data, error } = await supabase.auth.signInWithPassword({
+//     email,
+//     password,
+//   });
+//   if (error) throw error;
+
+//   return data.user;
+// }
+
+// // Get the currently logged-in user's profile (username)
+// export async function getCurrentUserProfile() {
+//   // 1) Get currently logged-in auth user
+//   const {
+//     data: { user },
+//     error: userError,
+//   } = await supabase.auth.getUser();
+
+//   if (userError) throw userError;
+//   if (!user) {
+//     throw new Error("No logged-in user");
+//   }
+
+//   // 2) Look up matching row in profiles table
+//   const { data, error } = await supabase
+//     .from("profiles")
+//     .select("username")
+//     .eq("id", user.id)
+//     .single();
+
+//   if (error) throw error;
+
+//   return {
+//     userId: user.id,
+//     username: data.username,
+//   };
+//   /*
+//   {
+//   userId: "uuid-string",
+//   username: "someName"
+//   }
+//   */
+// }
+
+// // Fetch all interests (id + name) from interests table
+// export async function fetchInterests() {
+//   const { data, error } = await supabase
+//     .from("interests")
+//     .select("interest_id, name")
+//     .order("name", { ascending: true });
+
+//   console.log("fetchInterests raw:", { data, error }); // for debugging
+
+//   if (error) throw error;
+//   return data || [];
+// }
+
+// // ______________this is addeditional code for interest scores______________
+
+// // Get the current logged-in user's id (helper)
+// async function getCurrentUserId() {
+//   const {
+//     data: { user },
+//     error,
+//   } = await supabase.auth.getUser();
+//   if (error) throw error;
+//   if (!user) throw new Error("No logged-in user");
+//   return user.id;
+// }
+
+// // Get existing score for one interest for this user (if any)
+// // { interestId } this is saying this function expects an object with interestId property as its parameter
+// export async function getInterestScore({ interestId }) {
+//   const userId = await getCurrentUserId();
+
+//   const { data, error } = await supabase
+//     .from("interest_scores")
+//     .select("score")
+//     .eq("is_interest_id", interestId)
+//     .eq("user_id", userId)
+//     .maybeSingle(); // returns null if no row
+
+//   if (error) throw error;
+
+//   // data may be null if the user has no score yet
+//   return data?.score ?? null;
+// }
+
+// // Save or update score 1–5
+// export async function saveInterestScore({ interestId, score }) {
+//   console.log("saveInterestScore called with:", { interestId, score }); // for debugging
+//   const userId = await getCurrentUserId();
+
+//   // simplest: upsert based on (user_id, is_interest_id)
+//   const { error } = await supabase.from("interest_scores").upsert(
+//     {
+//       is_interest_id: interestId,
+//       score,
+//       user_id: userId,
+//     },
+//     {
+//       onConflict: "user_id,is_interest_id", // ensure unique constraint on these two
+//     }
+//   );
+
+//   if (error) throw error;
+// }
+
+// // Delete the score row for this user + interest
+// // { interestId } this is saying this function expects an object with interestId property as its parameter
+// export async function deleteInterestScore({ interestId }) {
+//   const userId = await getCurrentUserId();
+
+//   const { error } = await supabase
+//     .from("interest_scores")
+//     .delete()
+//     .eq("is_interest_id", interestId)
+//     .eq("user_id", userId);
+
+//   if (error) throw error;
+// }
+// // Note: For upsert to work cleanly, you’ll eventually want a unique constraint on
+// // (user_id, is_interest_id) in interest_scores. For now, conceptually, this is
+// // “insert if none, replace if exists”.
+
+// // Fetch all interest scores for the current user
+// // Fetch all interest scores for the current user
+// export async function fetchUserInterestScores() {
+//   const userId = await getCurrentUserId();
+
+//   const { data, error } = await supabase
+//     .from("interest_scores")
+//     .select("is_interest_id, score")
+//     .eq("user_id", userId);
+
+//   if (error) throw error;
+
+//   return data || [];
+// }
+
+// // location comparing code
+
+// export async function findNearbyMatches(radiusKm = 10) {
+//   // 1) Get current user id
+//   const {
+//     data: { user },
+//     error: userError,
+//   } = await supabase.auth.getUser();
+
+//   if (userError) throw userError;
+//   if (!user) throw new Error("No logged-in user");
+
+//   // 2) Call the databaase function
+//   const { data, error } = await supabase.rpc("find_matches", {
+//     p_user_id: user.id,
+//     p_radius_km: radiusKm,
+//   });
+
+//   if (error) throw error;
+
+//   // Note;
+//   // data is an array like:
+//   // [
+//   //   { other_user_id, distance_km, shared_interests, avg_score_diff },
+//   //   ...
+//   // ]
+//   return data;
+// }
+
+// // Function for creating the match artifact
+// // NOTE: Q) this has not been added to my Notion documents yet
+// export async function createMatchArtifact(otherUserId) {
+//   const {
+//     data: { user },
+//     error: userError,
+//   } = await supabase.auth.getUser();
+
+//   if (userError) throw userError;
+//   if (!user) throw new Error("No logged-in user");
+
+//   const { data, error } = await supabase.rpc("create_match_artifact", {
+//     p_user_a: user.id,
+//     p_user_b: otherUserId,
+//   });
+
+//   if (error) throw error;
+
+//   // RPC returns an array of rows because it "returns table"
+//   const row = data?.[0];
+//   if (!row) throw new Error("No match artifact returned");
+
+//   return row; // { match_id, code, wallpaper_key }
+// }
+// ==================================================================
 import { supabase } from "../../supabaseClient";
 
-// ... your signUpWithEmail and signInWithEmail are already here ...
+// SIGN UP
 export async function signUpWithEmail({ email, password, username }) {
   const { data, error } = await supabase.auth.signUp({ email, password });
   if (error) throw error;
@@ -129,7 +341,8 @@ export async function signUpWithEmail({ email, password, username }) {
 
   return user;
 }
-// // LOGIN – NO username here
+
+// SIGN IN
 export async function signInWithEmail({ email, password }) {
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
@@ -140,20 +353,16 @@ export async function signInWithEmail({ email, password }) {
   return data.user;
 }
 
-// Get the currently logged-in user's profile (username)
+// CURRENT USER PROFILE
 export async function getCurrentUserProfile() {
-  // 1) Get currently logged-in auth user
   const {
     data: { user },
     error: userError,
   } = await supabase.auth.getUser();
 
   if (userError) throw userError;
-  if (!user) {
-    throw new Error("No logged-in user");
-  }
+  if (!user) throw new Error("No logged-in user");
 
-  // 2) Look up matching row in profiles table
   const { data, error } = await supabase
     .from("profiles")
     .select("username")
@@ -162,34 +371,22 @@ export async function getCurrentUserProfile() {
 
   if (error) throw error;
 
-  return {
-    userId: user.id,
-    username: data.username,
-  };
-  /*
-  {
-  userId: "uuid-string",
-  username: "someName"
-  } 
-  */
+  return { userId: user.id, username: data.username };
 }
 
-// Fetch all interests (id + name) from interests table
+// FETCH INTERESTS
 export async function fetchInterests() {
   const { data, error } = await supabase
     .from("interests")
     .select("interest_id, name")
     .order("name", { ascending: true });
 
-  console.log("fetchInterests raw:", { data, error }); // for debugging
-
+  console.log("fetchInterests raw:", { data, error });
   if (error) throw error;
   return data || [];
 }
 
-// ______________this is addeditional code for interest scores______________
-
-// Get the current logged-in user's id (helper)
+// helper: current user id
 async function getCurrentUserId() {
   const {
     data: { user },
@@ -200,8 +397,7 @@ async function getCurrentUserId() {
   return user.id;
 }
 
-// Get existing score for one interest for this user (if any)
-// { interestId } this is saying this function expects an object with interestId property as its parameter
+// GET interest score
 export async function getInterestScore({ interestId }) {
   const userId = await getCurrentUserId();
 
@@ -210,36 +406,29 @@ export async function getInterestScore({ interestId }) {
     .select("score")
     .eq("is_interest_id", interestId)
     .eq("user_id", userId)
-    .maybeSingle(); // returns null if no row
+    .maybeSingle();
 
   if (error) throw error;
-
-  // data may be null if the user has no score yet
   return data?.score ?? null;
 }
 
-// Save or update score 1–5
+// SAVE/UPSERT interest score
 export async function saveInterestScore({ interestId, score }) {
-  console.log("saveInterestScore called with:", { interestId, score }); // for debugging
   const userId = await getCurrentUserId();
 
-  // simplest: upsert based on (user_id, is_interest_id)
   const { error } = await supabase.from("interest_scores").upsert(
     {
       is_interest_id: interestId,
       score,
       user_id: userId,
     },
-    {
-      onConflict: "user_id,is_interest_id", // ensure unique constraint on these two
-    }
+    { onConflict: "user_id,is_interest_id" }
   );
 
   if (error) throw error;
 }
 
-// Delete the score row for this user + interest
-// { interestId } this is saying this function expects an object with interestId property as its parameter
+// DELETE interest score
 export async function deleteInterestScore({ interestId }) {
   const userId = await getCurrentUserId();
 
@@ -251,12 +440,8 @@ export async function deleteInterestScore({ interestId }) {
 
   if (error) throw error;
 }
-// Note: For upsert to work cleanly, you’ll eventually want a unique constraint on
-// (user_id, is_interest_id) in interest_scores. For now, conceptually, this is
-// “insert if none, replace if exists”.
 
-// Fetch all interest scores for the current user
-// Fetch all interest scores for the current user
+// FETCH ALL SCORES for current user
 export async function fetchUserInterestScores() {
   const userId = await getCurrentUserId();
 
@@ -266,14 +451,11 @@ export async function fetchUserInterestScores() {
     .eq("user_id", userId);
 
   if (error) throw error;
-
   return data || [];
 }
 
-// location comparing code
-
+// FIND MATCHES (calls your SQL function find_matches)
 export async function findNearbyMatches(radiusKm = 10) {
-  // 1) Get current user id
   const {
     data: { user },
     error: userError,
@@ -282,19 +464,34 @@ export async function findNearbyMatches(radiusKm = 10) {
   if (userError) throw userError;
   if (!user) throw new Error("No logged-in user");
 
-  // 2) Call the databaase function
   const { data, error } = await supabase.rpc("find_matches", {
     p_user_id: user.id,
     p_radius_km: radiusKm,
   });
 
   if (error) throw error;
+  return data || [];
+}
 
-  // Note;
-  // data is an array like:
-  // [
-  //   { other_user_id, distance_km, shared_interests, avg_score_diff },
-  //   ...
-  // ]
-  return data;
+// NEW: CREATE/GET shared artifact (code + wallpaper) for a match
+export async function createMatchArtifact(otherUserId) {
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError) throw userError;
+  if (!user) throw new Error("No logged-in user");
+
+  const { data, error } = await supabase.rpc("create_match_artifact", {
+    p_user_a: user.id,
+    p_user_b: otherUserId,
+  });
+
+  if (error) throw error;
+
+  const row = data?.[0];
+  if (!row) throw new Error("No match artifact returned");
+
+  return row; // { match_id, code, wallpaper_key }
 }
