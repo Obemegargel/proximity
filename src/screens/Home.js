@@ -375,7 +375,295 @@
 //   },
 // });
 // ==============================================================
-import React, { useEffect, useState, useMemo, use } from "react";
+// most recent working version
+// import React, { useEffect, useState, useMemo, use } from "react";
+// import {
+//   ActivityIndicator,
+//   FlatList,
+//   SafeAreaView,
+//   StyleSheet,
+//   Text,
+//   TextInput,
+//   View,
+//   Pressable, // I added this, then error
+//   Alert, // I added this, then error
+// } from "react-native";
+// import {
+//   getCurrentUserProfile,
+//   fetchInterests,
+//   fetchUserInterestScores,
+//   findNearbyMatches,
+// } from "../services/user";
+// import { useFocusEffect } from "@react-navigation/native";
+
+// // why does the { navigation } work here but not in previous versions? my guess because navigation is for the interest inside this whole thing
+// const Home = ({ navigation }) => {
+//   const [username, setUsername] = useState("");
+//   const [interests, setInterests] = useState([]);
+//   const [search, setSearch] = useState("");
+//   const [loading, setLoading] = useState(false);
+//   const [error, setError] = useState("");
+//   // const [fetchUserInterestScores, setUserInterests] = useState([]);
+//   const [userInterests, setUserInterests] = useState([]); // hopefull this is in the right spot. it is for fetching user's interests
+
+//   const loadData = async () => {
+//     try {
+//       setLoading(true);
+//       setError("");
+
+//       // 1) Get logged-in user's username
+//       const profile = await getCurrentUserProfile();
+//       setUsername(profile.username || "");
+
+//       // 2) Get all interests
+//       const allInterests = await fetchInterests();
+//       setInterests(allInterests);
+//       console.log("allInterests from Supabase:", allInterests); // for debugging
+
+//       // 3) Get user's interest scores
+//       const scores = await fetchUserInterestScores();
+
+//       // Build a lookup map from interest_id -> interest object
+//       const interestById = {};
+//       for (const interest of allInterests) {
+//         interestById[interest.interest_id] = interest;
+//       }
+
+//       // 4) Combine into "userInterests" with name + score
+//       const combined = scores
+//         .map((s) => {
+//           const interest = interestById[s.is_interest_id];
+//           if (!interest) return null;
+//           return {
+//             ...interest,
+//             score: s.score,
+//           };
+//         })
+//         .filter(Boolean);
+
+//       setUserInterests(combined);
+//     } catch (err) {
+//       console.log("Home load error:", err);
+//       setError(err.message || "Something went wrong loading data");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   // handle Finding Matches function
+//   const handleFindMatches = async () => {
+//     try {
+//       const matches = await findNearbyMatches(10); //search within 10 km
+//       console.log("MATCH RESULTS:", matches);
+//       // Navigate to a screen to show them (optional)
+//       // For now, navigate to LocationScreen (this route already exists)
+//       navigation.navigate("LocationScreen", { matches });
+//       // Later, when you create MatchesScreen and add it to the navigator:
+//       // navigation.navigate("MatchesScreen", { matches });
+//     } catch (err) {
+//       console.log("Error finding matches:", err);
+//       Alert.alert("Error", error.message);
+//     }
+//     // navigation.navigate("LocationScreen"); // tested handleFindMatches just navigates to LocationScreen
+//   };
+
+//   // useEffect(() => {
+//   //   loadData();
+//   // }, []);
+//   useFocusEffect(
+//     React.useCallback(() => {
+//       // This runs every time the Home screen comes into focus
+//       loadData();
+//     }, [])
+//   );
+
+//   // Filter interests based on search text
+//   const filteredInterests = useMemo(() => {
+//     const q = search.trim().toLowerCase();
+//     if (!q) return interests;
+
+//     // startsWith search (e.g., "sk" matches "skiing")
+//     // return interests.filter((item) => item.name.toLowerCase().startsWith(q));
+//     return interests.filter((item) => item.name.toLowerCase().includes(q));
+//   }, [search, interests]);
+
+//   console.log("search:", search); //for debugging
+//   console.log("filteredInterests:", filteredInterests); //for debugging
+//   if (loading) {
+//     return (
+//       <View style={styles.center}>
+//         <ActivityIndicator size="large" />
+//       </View>
+//     );
+//   }
+
+//   if (error) {
+//     return (
+//       <View style={styles.center}>
+//         <Text style={{ color: "red" }}>{error}</Text>
+//       </View>
+//     );
+//   }
+
+//   return (
+//     <SafeAreaView style={styles.container}>
+//       {/* Username at top */}
+//       <Text style={styles.usernameText}>{username || "username"}</Text>
+
+//       {/* Search Interests section */}
+//       <View style={styles.searchSection}>
+//         <Text style={styles.sectionTitle}>Search Interests</Text>
+
+//         <TextInput
+//           style={styles.searchInput}
+//           placeholder="type search..."
+//           value={search}
+//           onChangeText={setSearch}
+//         />
+
+//         <View style={styles.searchResultsBox}>
+//           <FlatList
+//             data={filteredInterests}
+//             keyExtractor={(item) => item.interest_id?.toString() ?? item.name}
+//             renderItem={({ item }) => (
+//               <Pressable
+//                 style={styles.interestRow}
+//                 onPress={() =>
+//                   navigation.navigate("InterestDetail", {
+//                     //InterestDetail is the name of the file I think, it used to be InterestDetailScreen but I renamed the file
+//                     interestId: item.interest_id,
+//                     interestName: item.name,
+//                   })
+//                 }
+//               >
+//                 <Text style={styles.interestText}>{item.name}</Text>
+//               </Pressable>
+//             )}
+//           />
+//         </View>
+//       </View>
+
+//       {/* Green button that does nothing for now
+//       <View style={styles.buttonPlaceholder}>
+//         <Text style={styles.buttonText}>
+//           Search for people with similar interests
+//         </Text>
+//       </View> */}
+//       {/* last working code */}
+//       {/* <Pressable
+//         style={styles.buttonPlaceholder}
+//         onPress={() => navigation.navigate("LocationScreen")}
+//       >
+//         <Text style={styles.buttonText}>
+//           Search for people with similar interests
+//         </Text>
+//       </Pressable> */}
+//       {/* experiment code */}
+//       {/* might need <View></View> wrapped around this Pressable, but maybe not */}
+//       <Pressable style={styles.buttonPlaceholder} onPress={handleFindMatches}>
+//         <Text style={styles.buttonText}>
+//           Search for people with similar interests
+//         </Text>
+//       </Pressable>
+
+//       {/* Interests list (we'll fill this later) */}
+//       <Text style={styles.sectionTitle}>Interests</Text>
+
+//       <View style={styles.searchResultsBox}>
+//         <FlatList
+//           data={userInterests}
+//           keyExtractor={(item) => item.interest_id?.toString() ?? item.name}
+//           renderItem={({ item }) => (
+//             <Pressable
+//               style={styles.interestRow}
+//               onPress={() =>
+//                 navigation.navigate("InterestDetail", {
+//                   interestId: item.interest_id,
+//                   interestName: item.name,
+//                 })
+//               }
+//             >
+//               <Text style={styles.interestText}>
+//                 {item.name} — Score: {item.score}
+//               </Text>
+//             </Pressable>
+//           )}
+//           ListEmptyComponent={
+//             <Text style={{ padding: 8 }}>
+//               You haven’t scored any interests yet.
+//             </Text>
+//           }
+//         />
+//       </View>
+//     </SafeAreaView>
+//   );
+// };
+
+// export default Home;
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     padding: 16,
+//     backgroundColor: "#ddd", // roughly like your mockup
+//   },
+//   center: {
+//     flex: 1,
+//     justifyContent: "center",
+//     alignItems: "center",
+//   },
+//   usernameText: {
+//     fontSize: 28,
+//     fontWeight: "bold",
+//     textAlign: "center",
+//     marginBottom: 16,
+//     textDecorationLine: "underline",
+//   },
+//   sectionTitle: {
+//     fontSize: 18,
+//     fontWeight: "bold",
+//     textDecorationLine: "underline",
+//     marginBottom: 8,
+//   },
+//   searchSection: {
+//     marginBottom: 16,
+//   },
+//   searchInput: {
+//     backgroundColor: "white",
+//     paddingHorizontal: 8,
+//     paddingVertical: 6,
+//     borderRadius: 4,
+//     marginBottom: 8,
+//   },
+//   searchResultsBox: {
+//     backgroundColor: "white",
+//     borderRadius: 4,
+//     maxHeight: 200,
+//   },
+//   interestRow: {
+//     paddingVertical: 6,
+//     paddingHorizontal: 8,
+//     borderBottomWidth: StyleSheet.hairlineWidth,
+//     borderBottomColor: "#ccc",
+//   },
+//   interestText: {
+//     fontSize: 16,
+//   },
+//   buttonPlaceholder: {
+//     marginVertical: 16,
+//     padding: 12,
+//     backgroundColor: "lightgreen",
+//     borderWidth: 1,
+//     borderColor: "green",
+//     alignItems: "center",
+//     borderRadius: 4,
+//   },
+//   buttonText: {
+//     fontWeight: "600",
+//   },
+// });
+// ==============================================================
+import React, { useMemo, useState, useCallback } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -384,215 +672,224 @@ import {
   Text,
   TextInput,
   View,
-  Pressable, // I added this, then error
-  Alert, // I added this, then error
+  Pressable,
+  Alert,
+  Platform,
 } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
+
 import {
   getCurrentUserProfile,
   fetchInterests,
   fetchUserInterestScores,
   findNearbyMatches,
 } from "../services/user";
-import { useFocusEffect } from "@react-navigation/native";
 
-// why does the { navigation } work here but not in previous versions? my guess because navigation is for the interest inside this whole thing
 const Home = ({ navigation }) => {
   const [username, setUsername] = useState("");
   const [interests, setInterests] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  // const [fetchUserInterestScores, setUserInterests] = useState([]);
-  const [userInterests, setUserInterests] = useState([]); // hopefull this is in the right spot. it is for fetching user's interests
+  const [userInterests, setUserInterests] = useState([]);
 
   const loadData = async () => {
     try {
       setLoading(true);
       setError("");
 
-      // 1) Get logged-in user's username
       const profile = await getCurrentUserProfile();
-      setUsername(profile.username || "");
+      setUsername(profile?.username || "");
 
-      // 2) Get all interests
       const allInterests = await fetchInterests();
-      setInterests(allInterests);
-      console.log("allInterests from Supabase:", allInterests); // for debugging
+      setInterests(allInterests || []);
 
-      // 3) Get user's interest scores
       const scores = await fetchUserInterestScores();
 
-      // Build a lookup map from interest_id -> interest object
       const interestById = {};
-      for (const interest of allInterests) {
+      for (const interest of allInterests || []) {
         interestById[interest.interest_id] = interest;
       }
 
-      // 4) Combine into "userInterests" with name + score
-      const combined = scores
+      const combined = (scores || [])
         .map((s) => {
           const interest = interestById[s.is_interest_id];
           if (!interest) return null;
-          return {
-            ...interest,
-            score: s.score,
-          };
+          return { ...interest, score: s.score };
         })
         .filter(Boolean);
+
+      // optional: sort by score desc
+      combined.sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
 
       setUserInterests(combined);
     } catch (err) {
       console.log("Home load error:", err);
-      setError(err.message || "Something went wrong loading data");
+      setError(err?.message || "Something went wrong loading data");
     } finally {
       setLoading(false);
     }
   };
 
-  // handle Finding Matches function
   const handleFindMatches = async () => {
     try {
-      const matches = await findNearbyMatches(10); //search within 10 km
+      const matches = await findNearbyMatches(10);
       console.log("MATCH RESULTS:", matches);
-      // Navigate to a screen to show them (optional)
-      // For now, navigate to LocationScreen (this route already exists)
       navigation.navigate("LocationScreen", { matches });
-      // Later, when you create MatchesScreen and add it to the navigator:
-      // navigation.navigate("MatchesScreen", { matches });
     } catch (err) {
       console.log("Error finding matches:", err);
-      Alert.alert("Error", error.message);
+      Alert.alert("Error", err?.message || "Failed to find matches");
     }
-    // navigation.navigate("LocationScreen"); // tested handleFindMatches just navigates to LocationScreen
   };
 
-  // useEffect(() => {
-  //   loadData();
-  // }, []);
   useFocusEffect(
-    React.useCallback(() => {
-      // This runs every time the Home screen comes into focus
+    useCallback(() => {
       loadData();
     }, [])
   );
 
-  // Filter interests based on search text
   const filteredInterests = useMemo(() => {
     const q = search.trim().toLowerCase();
     if (!q) return interests;
-
-    // startsWith search (e.g., "sk" matches "skiing")
-    // return interests.filter((item) => item.name.toLowerCase().startsWith(q));
-    return interests.filter((item) => item.name.toLowerCase().includes(q));
+    return interests.filter((item) =>
+      (item?.name || "").toLowerCase().includes(q)
+    );
   }, [search, interests]);
 
-  console.log("search:", search); //for debugging
-  console.log("filteredInterests:", filteredInterests); //for debugging
-  if (loading) {
-    return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
+  const renderSearchRow = ({ item }) => (
+    <Pressable
+      style={({ pressed }) => [
+        styles.row,
+        pressed && { opacity: 0.6, transform: [{ scale: 0.99 }] },
+      ]}
+      onPress={() =>
+        navigation.navigate("InterestDetail", {
+          interestId: item.interest_id,
+          interestName: item.name,
+        })
+      }
+    >
+      <Text style={styles.rowTitle}>{item.name}</Text>
+      <Text style={styles.rowChevron}>›</Text>
+    </Pressable>
+  );
 
-  if (error) {
-    return (
-      <View style={styles.center}>
-        <Text style={{ color: "red" }}>{error}</Text>
+  const renderUserInterestRow = ({ item }) => (
+    <Pressable
+      style={({ pressed }) => [
+        styles.row,
+        pressed && { opacity: 0.6, transform: [{ scale: 0.99 }] },
+      ]}
+      onPress={() =>
+        navigation.navigate("InterestDetail", {
+          interestId: item.interest_id,
+          interestName: item.name,
+        })
+      }
+    >
+      <View style={{ flex: 1 }}>
+        <Text style={styles.rowTitle}>{item.name}</Text>
+        <Text style={styles.rowSub}>Your score: {item.score}</Text>
       </View>
-    );
-  }
+      <View style={styles.scorePill}>
+        <Text style={styles.scorePillText}>{item.score}</Text>
+      </View>
+    </Pressable>
+  );
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Username at top */}
-      <Text style={styles.usernameText}>{username || "username"}</Text>
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.username}>{username || "Welcome"}</Text>
+        <Text style={styles.subtitle}>
+          Search interests and find nearby matches
+        </Text>
+      </View>
 
-      {/* Search Interests section */}
-      <View style={styles.searchSection}>
-        <Text style={styles.sectionTitle}>Search Interests</Text>
+      {/* Inline status */}
+      {error ? (
+        <View style={styles.alert}>
+          <Text style={styles.alertTitle}>Couldn’t load</Text>
+          <Text style={styles.alertText}>{error}</Text>
+        </View>
+      ) : null}
+
+      {/* Search Card */}
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>Search interests</Text>
 
         <TextInput
           style={styles.searchInput}
-          placeholder="type search..."
+          placeholder="Type an interest…"
+          placeholderTextColor="#777"
           value={search}
           onChangeText={setSearch}
+          autoCorrect={false}
+          autoCapitalize="none"
         />
 
-        <View style={styles.searchResultsBox}>
-          <FlatList
-            data={filteredInterests}
-            keyExtractor={(item) => item.interest_id?.toString() ?? item.name}
-            renderItem={({ item }) => (
-              <Pressable
-                style={styles.interestRow}
-                onPress={() =>
-                  navigation.navigate("InterestDetail", {
-                    //InterestDetail is the name of the file I think, it used to be InterestDetailScreen but I renamed the file
-                    interestId: item.interest_id,
-                    interestName: item.name,
-                  })
-                }
-              >
-                <Text style={styles.interestText}>{item.name}</Text>
-              </Pressable>
-            )}
-          />
+        <View style={styles.listBox}>
+          {loading ? (
+            <View style={styles.centerPad}>
+              <ActivityIndicator />
+              <Text style={styles.muted}>Loading…</Text>
+            </View>
+          ) : (
+            <FlatList
+              data={filteredInterests}
+              keyExtractor={(item) => item.interest_id?.toString() ?? item.name}
+              renderItem={renderSearchRow}
+              keyboardShouldPersistTaps="handled"
+              ListEmptyComponent={
+                <Text style={styles.emptyText}>
+                  No interests match that search.
+                </Text>
+              }
+            />
+          )}
         </View>
       </View>
 
-      {/* Green button that does nothing for now
-      <View style={styles.buttonPlaceholder}>
-        <Text style={styles.buttonText}>
-          Search for people with similar interests
-        </Text>
-      </View> */}
-      {/* last working code */}
-      {/* <Pressable
-        style={styles.buttonPlaceholder}
-        onPress={() => navigation.navigate("LocationScreen")}
+      {/* CTA */}
+      <Pressable
+        style={({ pressed }) => [
+          styles.cta,
+          pressed && { transform: [{ scale: 0.99 }], opacity: 0.9 },
+        ]}
+        onPress={handleFindMatches}
+        disabled={loading}
       >
-        <Text style={styles.buttonText}>
-          Search for people with similar interests
-        </Text>
-      </Pressable> */}
-      {/* experiment code */}
-      {/* might need <View></View> wrapped around this Pressable, but maybe not */}
-      <Pressable style={styles.buttonPlaceholder} onPress={handleFindMatches}>
-        <Text style={styles.buttonText}>
-          Search for people with similar interests
-        </Text>
+        <Text style={styles.ctaTitle}>Find nearby matches</Text>
+        <Text style={styles.ctaSubtitle}>Search within ~10 km</Text>
       </Pressable>
 
-      {/* Interests list (we'll fill this later) */}
-      <Text style={styles.sectionTitle}>Interests</Text>
+      {/* User Interests Card */}
+      <View style={styles.card}>
+        <View style={styles.cardHeaderRow}>
+          <Text style={styles.cardTitle}>Your interests</Text>
+          <Text style={styles.cardMeta}>{userInterests.length} total</Text>
+        </View>
 
-      <View style={styles.searchResultsBox}>
-        <FlatList
-          data={userInterests}
-          keyExtractor={(item) => item.interest_id?.toString() ?? item.name}
-          renderItem={({ item }) => (
-            <Pressable
-              style={styles.interestRow}
-              onPress={() =>
-                navigation.navigate("InterestDetail", {
-                  interestId: item.interest_id,
-                  interestName: item.name,
-                })
+        <View style={styles.listBox}>
+          {loading ? (
+            <View style={styles.centerPad}>
+              <ActivityIndicator />
+              <Text style={styles.muted}>Loading…</Text>
+            </View>
+          ) : (
+            <FlatList
+              data={userInterests}
+              keyExtractor={(item) => item.interest_id?.toString() ?? item.name}
+              renderItem={renderUserInterestRow}
+              ListEmptyComponent={
+                <Text style={styles.emptyText}>
+                  You haven’t scored any interests yet.
+                </Text>
               }
-            >
-              <Text style={styles.interestText}>
-                {item.name} — Score: {item.score}
-              </Text>
-            </Pressable>
+            />
           )}
-          ListEmptyComponent={
-            <Text style={{ padding: 8 }}>
-              You haven’t scored any interests yet.
-            </Text>
-          }
-        />
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -604,60 +901,152 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: "#ddd", // roughly like your mockup
+    backgroundColor: "#F6F7FB",
   },
-  center: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+
+  header: {
+    marginTop: 8,
+    marginBottom: 12,
   },
-  usernameText: {
+  username: {
     fontSize: 28,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 16,
-    textDecorationLine: "underline",
+    fontWeight: "800",
+    letterSpacing: -0.5,
+    color: "#111",
   },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    textDecorationLine: "underline",
-    marginBottom: 8,
+  subtitle: {
+    marginTop: 6,
+    fontSize: 14,
+    color: "#555",
   },
-  searchSection: {
-    marginBottom: 16,
-  },
-  searchInput: {
-    backgroundColor: "white",
-    paddingHorizontal: 8,
-    paddingVertical: 6,
-    borderRadius: 4,
-    marginBottom: 8,
-  },
-  searchResultsBox: {
-    backgroundColor: "white",
-    borderRadius: 4,
-    maxHeight: 200,
-  },
-  interestRow: {
-    paddingVertical: 6,
-    paddingHorizontal: 8,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: "#ccc",
-  },
-  interestText: {
-    fontSize: 16,
-  },
-  buttonPlaceholder: {
-    marginVertical: 16,
-    padding: 12,
-    backgroundColor: "lightgreen",
+
+  alert: {
+    backgroundColor: "#fff3f3",
     borderWidth: 1,
-    borderColor: "green",
-    alignItems: "center",
-    borderRadius: 4,
+    borderColor: "#ffd1d1",
+    borderRadius: 16,
+    padding: 12,
+    marginBottom: 12,
   },
-  buttonText: {
+  alertTitle: { fontWeight: "800", marginBottom: 4, color: "#8a1f1f" },
+  alertText: { color: "#8a1f1f" },
+
+  card: {
+    backgroundColor: "#fff",
+    borderRadius: 18,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: "#eee",
+    marginBottom: 12,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOpacity: 0.06,
+        shadowRadius: 12,
+        shadowOffset: { width: 0, height: 4 },
+      },
+      android: { elevation: 2 },
+    }),
+  },
+
+  cardHeaderRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "baseline",
+  },
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: "800",
+    color: "#111",
+  },
+  cardMeta: {
+    fontSize: 12,
+    color: "#666",
     fontWeight: "600",
   },
+
+  searchInput: {
+    marginTop: 10,
+    backgroundColor: "#F3F4F6",
+    borderWidth: 1,
+    borderColor: "#E7E7E7",
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 14,
+    color: "#111",
+  },
+
+  listBox: {
+    marginTop: 10,
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#f0f0f0",
+    overflow: "hidden",
+    maxHeight: 220,
+  },
+
+  row: {
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: "#eee",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  rowTitle: {
+    fontSize: 15,
+    fontWeight: "700",
+    color: "#111",
+  },
+  rowSub: {
+    marginTop: 3,
+    fontSize: 12,
+    color: "#666",
+    fontWeight: "600",
+  },
+  rowChevron: {
+    fontSize: 22,
+    color: "#bbb",
+    paddingLeft: 10,
+  },
+
+  scorePill: {
+    minWidth: 36,
+    height: 28,
+    borderRadius: 999,
+    backgroundColor: "#F2F2F2",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 10,
+    marginLeft: 10,
+  },
+  scorePillText: {
+    fontWeight: "800",
+    color: "#111",
+  },
+
+  cta: {
+    borderRadius: 18,
+    padding: 14,
+    backgroundColor: "#111",
+    marginBottom: 12,
+  },
+  ctaTitle: {
+    color: "#fff",
+    fontWeight: "900",
+    fontSize: 16,
+  },
+  ctaSubtitle: {
+    marginTop: 4,
+    color: "#ddd",
+    fontSize: 12,
+    fontWeight: "600",
+  },
+
+  centerPad: { padding: 16, alignItems: "center", gap: 8 },
+  muted: { color: "#666", fontSize: 13, fontWeight: "600" },
+  emptyText: { padding: 14, color: "#666", fontSize: 13 },
 });
